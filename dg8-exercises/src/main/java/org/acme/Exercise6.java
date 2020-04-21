@@ -15,16 +15,17 @@ public class Exercise6 {
 
     public static void main(String[] args) {
 
-        /* UNCOMMENT When starting this exercise
+       // /* UNCOMMENT When starting this exercise
 
         // Create cache manager
         DefaultCacheManager cacheManager = new DefaultCacheManager();
 
         // Create cache config
         ConfigurationBuilder builder = new ConfigurationBuilder();
-        builder.indexing().index(Index.ALL)
-                .addProperty("default.directory_provider", "ram")
-                .addProperty("lucene_version", "LUCENE_CURRENT");
+        builder.indexing().index(Index.ALL) // 	Here we are telling our Cache config that we want to index all entries
+                .addProperty("default.directory_provider", "ram") // The storage for lucene will in the memory
+                .addProperty("lucene_version", "LUCENE_CURRENT"); //and we want to give it a version
+
 
         // Obtain the cache
         Cache<String, Person> cache = cacheManager.administration()
@@ -37,15 +38,21 @@ public class Exercise6 {
         cache.put("person3", new Person("John", "Milton"));
         
         // TODO: Obtain a query factory for the cache
-
+        QueryFactory queryFactory = Search.getQueryFactory(cache);
+        // Construct a query
+        Query query = queryFactory.from(Person.class).having("name").eq("William").toBuilder().build();
+        // Execute the query
+        List<Person> matches = query.list();
 
         
         // List the results
-        matches.forEach(person -> System.out.printf("Match: %s", person));
+        matches.forEach(person -> System.out.printf("Match: %s\n", person));
         // Stop the cache manager and release all resources
         cacheManager.stop();
 
-        UNCOMMENT When starting this exercise */
+        System.exit(0);
+
+      //  UNCOMMENT When starting this exercise */
     }
 
 }

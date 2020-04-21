@@ -7,18 +7,27 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.spi.CachingProvider;
 
 // Java JCache API
+//JSR-107 cache API
 public class Exercise2 {
 
     public static void main(String[] args) {
         // TODO: Construct a simple local cache manager with default configuration
+        CachingProvider jcacheProvider = Caching.getCachingProvider();
+        CacheManager cacheManager = jcacheProvider.getCacheManager();
+        MutableConfiguration<String, String> configuration = new MutableConfiguration<>();
+        configuration.setTypes(String.class, String.class);
 
         // TODO: create a cache using the supplied configuration
+        Cache<String, String> cache = cacheManager.createCache("myCache", configuration);
 
         // Store and retrieve value
-
+        cache.put("key", "value");
+        System.out.printf("key = %s\n", cache.get("key"));
         
         // TODO: Stop the cache manager and release all resources
+        cacheManager.close();
 
+        System.exit(0); // without thid program doesn't end gracefully
     }
 
 }

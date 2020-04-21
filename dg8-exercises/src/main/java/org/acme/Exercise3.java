@@ -21,9 +21,17 @@ import java.util.concurrent.CompletableFuture;
 public class Exercise3 {
 
     public static void main(String[] args) throws Exception {
-      /* UNCOMMENT When starting this exercise
+    //* UNCOMMENT When starting this exercise
 
-      
+      /*
+      Lets start by initializing our Cache with the DefaultCacheManager as we have done so in the 
+      previous labs. However we will use the functional API and hence after getting the Cache our Map
+       implementation will be different. How to use the Functional API? Using an asynchronous API, 
+       all methods that return a single result, return a CompletableFuture which wraps the result. 
+       To avoid blocking, it offers the possibility to receive callbacks when the CompletableFuture 
+       has completed, or it can be chained or composes with other CompletableFuture instances.
+
+*/
       DefaultCacheManager cacheManager = new DefaultCacheManager();
         cacheManager.defineConfiguration("local", new ConfigurationBuilder().build());
         AdvancedCache<String, String> cache = cacheManager.<String, String>getCache("local").getAdvancedCache();
@@ -31,11 +39,17 @@ public class Exercise3 {
         FunctionalMap.WriteOnlyMap<String, String> writeOnlyMap = WriteOnlyMapImpl.create(functionalMap);
         FunctionalMap.ReadOnlyMap<String, String> readOnlyMap = ReadOnlyMapImpl.create(functionalMap);
 
-        //TODO  Execute two parallel write-only operation to store key/value pairs
+        // TODO Execute two parallel write-only operation to store key/value pairs
+        CompletableFuture<Void> writeFuture1 = writeOnlyMap.eval("key1", "value1",
+                (v, writeView) -> writeView.set(v)); 
+        CompletableFuture<Void> writeFuture2 = writeOnlyMap.eval("key2", "value2",
+                (v, writeView) -> writeView.set(v));
 
-
-        // TODO When each write-only operation completes, execute a read-only operation to retrieve the value
-
+        //TODO When each write-only operation completes, execute a read-only operation to retrieve the value
+        CompletableFuture<String> readFuture1 =
+                writeFuture1.thenCompose(r -> readOnlyMap.eval("key1", EntryView.ReadEntryView::get)); 
+        CompletableFuture<String> readFuture2 =
+                writeFuture2.thenCompose(r -> readOnlyMap.eval("key2", EntryView.ReadEntryView::get));
 
         // TODO When the read-only operation completes, print it out
 
@@ -52,19 +66,22 @@ public class Exercise3 {
         
         // Use read-write multi-key based operation to write new values
         // together with lifespan and return previous values
-        // TODO
+        //TODO Create a read-write map
+        // Use read-write multi-key based operation to write new values
+        // together with lifespan and return previous values
+        Map<String, String> data = new HashMap<>();
+        data.put("key1", "newValue1");
+        data.put("key2", "newValue2");
+        Traversable<String> previousValues = readWriteMap.evalMany(data, (v, readWriteView) -> {
+            String prev = readWriteView.find().orElse(null);
+            readWriteView.set(v, new MetaLifespan(Duration.ofHours(1).toMillis()));
+            return prev;
+        });
 
-        // Use read-only multi-key operation to read current values for multiple keys
-        Traversable<EntryView.ReadEntryView<String, String>> entryViews =
-                readOnlyMap.evalMany(data.keySet(), readOnlyView -> readOnlyView);
-        System.out.printf("Updated entries: %n");
-        entryViews.forEach(view -> System.out.printf("%s%n", view));
+        cacheManager.stop();
+        System.exit(0);
 
-        // Finally, print out the previous entry values
-        System.out.printf("Previous entry values: %n");
-        previousValues.forEach(prev -> System.out.printf("%s%n", prev));
-
-        UNCOMMENT When starting this exercise */
+       // UNCOMMENT When starting this exercise */
     }
 
 }
