@@ -28,11 +28,26 @@ import static org.acme.rest.json.Init.GAME_CACHE;
 @Consumes(MediaType.APPLICATION_JSON)
 public class GameResource {
 
+    @Inject
+    @Remote(GAME_CACHE)
+    RemoteCache<String, Game> gameStore;
 
     @DELETE
     public Game delete(Game game) {
         //gameStore.removeAsync(removeIf(existingGame -> existingGame.name.contentEquals(game.name));
         return null;
+    }
+
+    @GET
+    public Set<Game> list() {
+        return new HashSet<>(gameStore.values());
+    }
+
+    @POST
+    public Set<String> add(Game game) {
+        //add method is using the Async api of infinispan/Red Hat Data Grid to add the entry into the cache
+        gameStore.putAsync(game.getName(), game);
+        return gameStore.keySet();
     }
 }
 

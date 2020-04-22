@@ -1,5 +1,10 @@
 # dg8-quarkus-client-example
 
+To get the password to add to application.properties
+```
+oc get secret datagrid-service-generated-secret -o jsonpath="{.data.identities\.yaml}" | base64 --decode
+```
+
 This example showcases the x-site replication with a simple app using infinispan server.  
 It was created from the original inifinspan tutorial at 
 https://github.com/infinispan/infinispan-simple-tutorials/tree/master/xsite-replication

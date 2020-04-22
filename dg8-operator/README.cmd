@@ -1,4 +1,6 @@
+# Deploy DG CRs. Operator needs to be installed by admin
 ```
+# you can also use the OLM console
 oc apply -f cr_minimal.yaml
 
 #get the load balancer
