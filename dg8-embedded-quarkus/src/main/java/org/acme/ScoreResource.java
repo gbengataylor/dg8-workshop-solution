@@ -19,17 +19,19 @@ import javax.ws.rs.core.Response.Status;
 @Path("/api")
 public class ScoreResource {
 
+    @Inject
+    ScoreService scoreService;
 
     @OPTIONS
     public Response opt() {
         return Response.ok().build();
     }
 
-    @GET
-    @Path("/hello")
-    public String hello() {
-        return "hello";
-    }
+    // @GET
+    // @Path("/hello")
+    // public String hello() {
+    //     return "hello";
+    // }
 
  
 
@@ -44,6 +46,35 @@ public class ScoreResource {
     @Path("/{id}")
     public Response deleteOne(@PathParam("id") Long id) {
         return Response.noContent().build();
+    }
+    @POST
+    @Transactional
+    public Response create(@Valid Score item) {
+        scoreService.save(item);
+        return Response.status(Status.CREATED).entity(item).build();
+    }
+
+     @GET
+    @Path("/{id}")
+    public Object getOne(@PathParam("id") String id) {
+        Object entity = scoreService.findById(id);
+        if (entity == null) {
+            throw new WebApplicationException("ScoreCard with id of " + id + " does not exist.", Status.NOT_FOUND);
+        }
+        return entity;
+    }
+
+    @GET
+    public List<Score> getAll() {
+        return scoreService.getAll();
+    }
+    @PATCH
+    @Path("/{id}")
+    @Transactional
+    public Response update(@Valid Score card, @PathParam("id") Long id) {
+        scoreService.save(card);
+        return Response.status(Status.CREATED).entity(card).build();
+
     }
 
 }
