@@ -9,7 +9,7 @@
 	<description>Spring Boot Session with RHDG Tutorial</description>
 
 	<properties>
-        <version.spring.boot>2.2.5.RELEASE</version.spring.boot>
+        <version.spring.boot>2.5.12</version.spring.boot>
         <version.spring.session>2.2.2.RELEASE</version.spring.session>
         <version.infinispan>10.1.5.Final-redhat-00001</version.infinispan>
     </properties>
